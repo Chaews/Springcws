@@ -3,9 +3,13 @@ package ezenwebcws.controller;
 import ezenwebcws.dto.RoomDto;
 import ezenwebcws.service.MemberService;
 import ezenwebcws.service.RoomService;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
 
 @Controller // 해당 클래스가 템플릿영역으로 사용
 @RequestMapping("/room")
@@ -33,6 +37,18 @@ public class RoomController {
     @GetMapping("/list") // 3. 방 목록 페이지 이동
     public String list(){
         return "room/list";
+    }
+
+    @GetMapping("/roomlist")
+    @ResponseBody
+    public void roomlist(HttpServletResponse response){
+        JSONObject object = roomService.room_list();
+        try{
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json");
+            response.getWriter().print(object);
+        }
+        catch(Exception e){ e.printStackTrace();}
     }
 }
 

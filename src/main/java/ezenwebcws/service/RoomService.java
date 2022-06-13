@@ -24,7 +24,7 @@ public class RoomService {
     }
 
     // 2. 룸 호출
-    public JSONArray room_list(){
+    public JSONObject room_list(){
         JSONArray jsonArray = new JSONArray();
         // 1. 모든 엔티티 호출
         List<RoomEntity> roomEntityList = roomRepository.findAll();
@@ -32,10 +32,12 @@ public class RoomService {
         for(RoomEntity temp : roomEntityList){
             JSONObject jsonObject = new JSONObject();
             jsonObject.put("roomname", temp.getRoomname());
-            jsonObject.put("x", temp.getX());
-            jsonObject.put("y", temp.getY());
+            jsonObject.put("lng",temp.getX());
+            jsonObject.put("lat",temp.getY());
             jsonArray.put(jsonObject);
         }
-        return jsonArray;
+        JSONObject object = new JSONObject();
+        object.put("positions",jsonArray);
+        return object;
     }
 }
