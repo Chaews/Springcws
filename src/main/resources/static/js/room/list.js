@@ -1,4 +1,4 @@
-
+let list = [];
 // GeoLocation을 이용해서 접속 위치를 얻어옵니다
 navigator.geolocation.getCurrentPosition(function(position) {
     var lat = position.coords.latitude, // 위도
@@ -83,6 +83,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
             contentType : 'application/json',
             method : 'POST',
             success : function(data) {
+            list = data.positions;
                 if(data.positions.length==0){ html = "<div>검색된 방이 없습니다</div>"; }
                 var markers = $(data.positions).map(function(i, position) {
                     var marker = new kakao.maps.Marker({
@@ -101,7 +102,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
                     '</div>'+
                     '<div class="col-md-6">'+
                     '<div> 집번호 : <span> '+position.rno+' </span> </div>'+
-                    '<div> 집이름 : <span onclick="showdetail(\''+position+'\')"> '+position.rname+' </span> </div>'+
+                    '<div> 집이름 : <span onclick="showdetail('+position.rno+')"> '+position.rname+' </span> </div>'+
                     '</div>'+
                     '</div>';
 
@@ -125,28 +126,27 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 });
 
-    function showdetail(pos) {
-    console.log(pos);
-    /*
-        let html = '방번호 : ' + position.rno + '<br>' +
-                    '방이름 :  ' + position.rname + '<br>' +
-                    '거래방식 :  ' + position.rtype + '<br>' +
-                    '가격 :  ' + position.rprice + '<br>' +
-                    '면적 :  ' + position.rspace + '<br>' +
-                    '관리비 :  ' + position.rmprice + '<br>' +
-                    '층 :  ' + position.rfloor + '<br>' +
-                    '전체층수 :  ' + position.rtotalfloor + '<br>' +
-                    '구조 :  ' + position.rstructure + '<br>' +
-                    '준공날짜 :  ' + position.rdate + '<br>' +
-                    '입주가능일 :  ' + position.rmovedate + '<br>' +
-                    '주차 여부 :  ' + position.rparking + '<br>' +
-                    '엘리베이터 여부 :  ' + position.relevator + '<br>' +
-                    '건물 종류 :  ' + position.rbuildingtype + '<br>' +
-                    '주소  :  ' + position.raddress + '<br>' +
-                    '상세설명 :  ' + position.rdetail + '<br>' +
-                    '상태 :  ' + position.ractive ;
+    function showdetail(rno) {
+
+        let html = '방번호 : ' + list[rno-1].rno + '<br>' +
+                    '방이름 :  ' + list[rno-1].rname + '<br>' +
+                    '거래방식 :  ' + list[rno-1].rtype + '<br>' +
+                    '가격 :  ' + list[rno-1].rprice + '<br>' +
+                    '면적 :  ' + list[rno-1].rspace + '<br>' +
+                    '관리비 :  ' + list[rno-1].rmprice + '<br>' +
+                    '층 :  ' + list[rno-1].rfloor + '<br>' +
+                    '전체층수 :  ' + list[rno-1].rtotalfloor + '<br>' +
+                    '구조 :  ' + list[rno-1].rstructure + '<br>' +
+                    '준공날짜 :  ' + list[rno-1].rdate + '<br>' +
+                    '입주가능일 :  ' + list[rno-1].rmovedate + '<br>' +
+                    '주차 여부 :  ' + list[rno-1].rparking + '<br>' +
+                    '엘리베이터 여부 :  ' + list[rno-1].relevator + '<br>' +
+                    '건물 종류 :  ' + list[rno-1].rbuildingtype + '<br>' +
+                    '주소  :  ' + list[rno-1].raddress + '<br>' +
+                    '상세설명 :  ' + list[rno-1].rdetail + '<br>' +
+                    '상태 :  ' + list[rno-1].ractive;
 
          $("#sidebar").html(html);
-         */
+
 
     }
