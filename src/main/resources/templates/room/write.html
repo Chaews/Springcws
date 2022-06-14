@@ -5,20 +5,36 @@
     <title>Title</title>
 </head>
 <body>
+<div th:replace="header.html::header"></div>
     <h3> 방 등록 </h3>
-    <form>
-        이름 : <input type="text" id="roomname">
-        지역 :
-        <input type="text" id="sample5_address" placeholder="주소">
+    <form id="saveform">
+        <!-- Dto로 자동주입 할경우에는 input name과 dto 필드명 동일하게 -->
+        이름 : <input type="text" name="rname" id="rname"><br>
+        사진 : <input type="file" name="rimg" id="rimg" multiple="multiple"><br>
+        x : <input type="input" name="x" id="x">
+        y : <input type="input" name="y" id="y">
+        주소 : <input type="text" name="raddress" id="sample5_address" placeholder="주소">
         <input type="button" onclick="sample5_execDaumPostcode()" value="주소 검색"><br>
         <div id="map" style="width:300px;height:300px;margin-top:10px;display:none"></div>
+        거래방식 : <input type="text" name="rtype" id="rtype" placeholder="전세/월세/매매"><br>
+        가격 : <input type="text" name="rprice" id="rprice" placeholder="가격"><br>
+        면적 : <input type="text" name="rspace" id="rspace" placeholder="면적"><br>
+        관리비 : <input type="text" name="rmprice" id="rmprice" placeholder="관리비"><br>
+        층 : <input type="text" name="rfloor" id="rfloor" placeholder="층"><br>
+        건물층수 : <input type="text" name="rtotalfloor" id="rtotalfloor" placeholder="건물층수"><br>
+        구조 : <input type="text" name="rstructure" id="rstructure" placeholder="구조"><br>
+        준공날짜 : <input type="date" name="rdate" id="rdate"><br>
+        입주가능일 : <input type="date" name="rmovedate" id="rmovedate"><br>
+        주차 여부 : <input type="text" name="rparking" id="rparking" placeholder="주차 여부"><br>
+        엘리베이터 여부 : <input type="text" name="relevator" id="relevator" placeholder="엘리베이터 여부"><br>
+        건물종류 : <input type="text" name="rbuildingtype" id="rbuildingtype" placeholder="건물 종류"><br>
+        상세설명 : <input type="text" name="rdetail" id="rdetail" placeholder="상세설명"><br>
+        상태 : <input type="text" name="ractive" id="ractive" placeholder="상태"><br>
+
         <button type="button" onclick="writesave()"> 등록 </button>
     </form>
 
-
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <script src="//dapi.kakao.com/v2/maps/sdk.js?appkey=a65e55fac574bd8ab99db819b921f3b7&libraries=services"></script>
     <script type="text/javascript" src="/js/room/write.js"></script>
+<div th:replace="footer.html::footer"></div>
 </body>
 </html>

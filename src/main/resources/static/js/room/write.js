@@ -4,11 +4,15 @@ let y = null;
 
 // 저장 메소드
 function writesave(){
-    let roomname = $("#roomname").val();
+    // 1. form 가져오기
+    let form = $("#saveform")[0];
+    let formdata = new FormData(form);
     $.ajax({
         url : "/room/write",
         method: "POST",
-        data : {"roomname" : roomname , "x" : x , "y" : y},
+        data : formdata,
+        contentType : false, // 첨부파일 전송시 사용되는 속성
+        processData : false, // 첨부파일 전송시 사용되는 속성
         success: function(result){
 
         }
@@ -50,8 +54,8 @@ function sample5_execDaumPostcode() {
                     // 해당 주소에 대한 좌표를 받아서
                     var coords = new daum.maps.LatLng(result.y, result.x);
                         // 해당 좌표를 전역변수로 이동
-                        x = result.x;
-                        y = result.y;
+                        $("#x").val(result.x);
+                        $("#y").val(result.y);
                     // 지도를 보여준다.
                     mapContainer.style.display = "block";
                     map.relayout();
