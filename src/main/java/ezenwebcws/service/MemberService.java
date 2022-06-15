@@ -1,7 +1,7 @@
 package ezenwebcws.service;
 
-import ezenwebcws.domain.MemberEntity;
-import ezenwebcws.domain.MemberRepository;
+import ezenwebcws.domain.member.MemberEntity;
+import ezenwebcws.domain.member.MemberRepository;
 import ezenwebcws.dto.MemberDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

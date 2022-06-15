@@ -1,7 +1,9 @@
 package ezenwebcws.service;
 
-import ezenwebcws.domain.RoomEntity;
-import ezenwebcws.domain.RoomRepository;
+import ezenwebcws.domain.room.RoomEntity;
+import ezenwebcws.domain.room.RoomRepository;
+import ezenwebcws.domain.room.RoomimgEntity;
+import ezenwebcws.domain.room.RoomimgRepository;
 import ezenwebcws.dto.RoomDto;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -9,39 +11,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.util.*;
-
-import static com.fasterxml.jackson.databind.type.LogicalType.Map;
 
 @Service
 public class RoomService {
 
     @Autowired
     RoomRepository roomRepository;
+    @Autowired
+    RoomimgRepository roomimgRepository;
 
     // 1. 룸 저장
+    @Transactional
     public boolean room_save(RoomDto roomDto) {
-        RoomEntity roomEntity = RoomEntity.builder()
-                .rname(roomDto.getRname())
-                .x(roomDto.getX())
-                .y(roomDto.getY())
-                .rtype(roomDto.getRtype())
-                .rprice(roomDto.getRprice())
-                .rspace(roomDto.getRspace())
-                .rmprice(roomDto.getRmprice())
-                .rfloor(roomDto.getRfloor())
-                .rtotalfloor(roomDto.getRtotalfloor())
-                .rstructure(roomDto.getRstructure())
-                .rdate(roomDto.getRdate())
-                .rmovedate(roomDto.getRmovedate())
-                .rparking(roomDto.getRparking())
-                .relevator(roomDto.getRelevator())
-                .rbuildingtype(roomDto.getRbuildingtype())
-                .raddress(roomDto.getRaddress())
-                .rdetail(roomDto.getRdetail())
-                .ractive(roomDto.getRactive())
-                .build();
+
+        RoomEntity roomEntity = roomDto.toentity();
+        System.out.println(roomEntity.toString());
+        // 2. 저장 [ 우선적으로 룸 DB에 저장한다 ]
+        roomRepository.save(roomEntity);
 
         String uuidfile = null;
         // 첨부파일
@@ -60,15 +49,24 @@ public class RoomService {
                 //.getOriginalFilename() : 실제 첨부파일 이름
 
                 // 3. 첨부파일 업로드 처리
-                try { file.transferTo( new File(filepath));
-                roomEntity.setRimg(uuidfile);}
-                catch(Exception e){ e.printStackTrace(); }
+                try { file.transferTo( new File(filepath) );
+                    // 1. 이미지 엔티티 생성
+                    RoomimgEntity roomimgEntity = RoomimgEntity.builder()
+                            .rimg(uuidfile)
+                            .roomEntity(roomEntity)
+                            .build();
+                    // 2. 엔티티 세이브
+                    roomimgRepository.save(roomimgEntity);
+                    // 3. 이미지엔티티를 룸엔티티에 추가
+
+                    roomEntity.getRoomimgEntityList().add(roomimgEntity);
+
+
+                }catch(Exception e){ e.printStackTrace(); }
 
 
             }
         }
-
-        roomRepository.save(roomEntity);
         return true;
     }
 
@@ -106,35 +104,34 @@ public class RoomService {
 
         // 1. 모든 엔티티 꺼내오기
         List<RoomEntity> roomEntityList = roomRepository.findAll();
-
         List<Map<String, String>> maplist = new ArrayList<>();
         // 2. 엔티티 -> map
         for (RoomEntity entity : roomEntityList) { // 리스트에서 엔티티 하나씩 꺼내오기
             // Location 범위내 좌표만 저장하기
-            Double dx = Double.parseDouble(entity.getX());
-            Double dy = Double.parseDouble(entity.getY());
+            Double dx = Double.parseDouble(entity.getRlat());
+            Double dy = Double.parseDouble(entity.getRlng());
             if(ha<dx && dx < oa && qa < dy && dy < pa ) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("rno", entity.getRno()+"");
-                map.put("rname", entity.getRname());
-                map.put("lng", entity.getX());
-                map.put("lat", entity.getY());
-                map.put("rimg", entity.getRimg());
-                map.put("rtype", entity.getRtype());
-                map.put("rprice", entity.getRprice()+"");
-                map.put("rspace", entity.getRspace()+"");
-                map.put("rmprice", entity.getRmprice()+"");
-                map.put("rfloor", entity.getRfloor()+"");
-                map.put("rtotalfloor", entity.getRtotalfloor()+"");
-                map.put("rstructure", entity.getRstructure());
-                map.put("rdate", entity.getRdate());
-                map.put("rmovedate", entity.getRmovedate());
-                map.put("rparking", entity.getRparking());
-                map.put("relevator", entity.getRelevator());
-                map.put("rbuildingtype", entity.getRbuildingtype());
-                map.put("raddress", entity.getRaddress());
-                map.put("rdetail", entity.getRdetail());
-                map.put("ractive", entity.getRactive());
+                map.put("rtitle", entity.getRtitle());
+                map.put("rlng", entity.getRlat());
+                map.put("rlat", entity.getRlng());
+//                map.put("rtrans", entity.getRtrans());
+//                map.put("rprice", entity.getRprice());
+//                map.put("rspace", entity.getRspace());
+//                map.put("rmanagementfee", entity.getRmanagementfee());
+//                map.put("rstructure", entity.getRstructure());
+//                map.put("rcompletiondate", entity.getRcompletiondate());
+//                map.put("rindate", entity.getRindate());
+//                map.put("rkind", entity.getRkind());
+//                map.put("raddress", entity.getRaddress());
+//                map.put("ractive", entity.getRactive());
+//                map.put("rfloor", entity.getRfloor()+"");
+//                map.put("rmaxfloor", entity.getRmaxfloor()+"");
+//                map.put("rparking", entity.getRparking()+"");
+//                map.put("relevator", entity.getRelevator()+"");
+//                map.put("rcontents", entity.getRcontents());
+                map.put("rimg",entity.getRoomimgEntityList().get(0).getRimg());
                 maplist.add(map);
             }
         }
@@ -142,6 +139,43 @@ public class RoomService {
         Map<String, List<Map<String, String>>> object = new HashMap<>();
         object.put("positions", maplist);
         return object;
+    }
+
+    public JSONObject get_room(int rno){
+        JSONArray rimglist = new JSONArray();
+        Optional<RoomEntity> roomEntityOption = roomRepository.findById(rno);
+        RoomEntity roomEntity = roomEntityOption.get();
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("rno",roomEntity.getRno());
+        jsonObject.put("rtitle",roomEntity.getRtitle());
+        jsonObject.put("rlat",roomEntity.getRlng());
+        jsonObject.put("rlng",roomEntity.getRlat());
+        jsonObject.put("rtrans",roomEntity.getRtrans());
+        jsonObject.put("rprice",roomEntity.getRprice());
+        jsonObject.put("rspace",roomEntity.getRspace());
+        jsonObject.put("rmanagementfee",roomEntity.getRmanagementfee());
+        jsonObject.put("rstructure",roomEntity.getRstructure());
+        jsonObject.put("rcompletiondate",roomEntity.getRcompletiondate());
+        jsonObject.put("rindate",roomEntity.getRindate());
+        jsonObject.put("rkind",roomEntity.getRkind());
+        jsonObject.put("raddress",roomEntity.getRaddress());
+        jsonObject.put("ractive",roomEntity.getRactive());
+        jsonObject.put("rfloor",roomEntity.getRfloor());
+        jsonObject.put("rmaxfloor",roomEntity.getRmaxfloor());
+//        jsonObject.put("rparking",roomEntity.getrp);
+//        jsonObject.put("relevator",roomEntity.getRno());
+        jsonObject.put("rcontents",roomEntity.getRcontents());
+//        for(int i = 0 ; i < roomEntity.getRoomimgEntityList().size() ; i++){
+//            JSONObject jsonObject2 = new JSONObject();
+//            jsonObject2.put("rimg"+i,roomEntity.getRoomimgEntityList().get(i));
+//            rimglist.put(jsonObject2);
+//        }
+//        jsonObject.put("rimg",rimglist);
+        for(RoomimgEntity roomimgEntity : roomEntity.getRoomimgEntityList()){
+            rimglist.put(roomimgEntity.getRimg());
+        }
+        jsonObject.put("rimglist" ,rimglist );
+        return jsonObject;
     }
 
 }

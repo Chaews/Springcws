@@ -63,6 +63,18 @@ public class RoomController {
         System.out.println(location);
         return roomService.room_list(location);
     }
+
+    @GetMapping("/getroom")
+    @ResponseBody
+    public void getroom(@RequestParam("rno") int rno, HttpServletResponse response) {
+        JSONObject object = roomService.get_room(rno);
+       try{
+           response.setCharacterEncoding("UTF-8");
+           response.setContentType("application/json");
+           response.getWriter().print(object);
+       }
+       catch(Exception e){ e.printStackTrace();}
+    }
 }
 
 

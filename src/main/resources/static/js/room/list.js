@@ -18,11 +18,11 @@ navigator.geolocation.getCurrentPosition(function(position) {
             if(data.positions.length==0){ html = "<div>검색된 방이 없습니다</div>"; }
             var markers = $(data.positions).map(function(i, position) {
                 var marker = new kakao.maps.Marker({
-                        position : new kakao.maps.LatLng(position.lat, position.lng),
+                        position : new kakao.maps.LatLng(position.rlat, position.rlng),
                         image : markerImage
                 });
                 kakao.maps.event.addListener(marker, 'click', function() {
-                    alert('룸 이름 : ' + position.rname);
+                    getroom(position.rno);
                 });
 
                 // 사이드바에 추가할 html 구성
@@ -34,7 +34,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
                 '</div>'+
                 '<div class="col-md-6">'+
                 '<div> 집번호 : <span> '+position.rno+' </span> </div>'+
-                '<div> 집이름 : <span> '+position.rname+' </span> </div>'+
+                '<div> 집이름 : <span> '+position.rtitle+' </span> </div>'+
                 '</div>'+
                 '</div>';
 
@@ -44,6 +44,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
             // 해당 html을 해당 id값에 추가
 
             $("#sidebar").html(html);
+
 
         }
     })
@@ -87,22 +88,24 @@ navigator.geolocation.getCurrentPosition(function(position) {
                 if(data.positions.length==0){ html = "<div>검색된 방이 없습니다</div>"; }
                 var markers = $(data.positions).map(function(i, position) {
                     var marker = new kakao.maps.Marker({
-                            position : new kakao.maps.LatLng(position.lat, position.lng),
+                            position : new kakao.maps.LatLng(position.rlat, position.rlng),
                             image : markerImage
                     });
                     kakao.maps.event.addListener(marker, 'click', function() {
-                        alert('룸 이름 : ' + position.rname);
+                        // 해당 모달에 데이터 넣기
+                        getroom(position.rno);
+                        // 모달 띄우기
                     });
 
                     // 사이드바에 추가할 html 구성
                     html +=
-                    '<div class="row">'+
+                    '<div class="row" onclick="getroom('+position.rno+')">'+
                     '<div class="col-md-6">'+
                     '<img src="/upload/'+position.rimg+'" width="100%">'+
                     '</div>'+
                     '<div class="col-md-6">'+
                     '<div> 집번호 : <span> '+position.rno+' </span> </div>'+
-                    '<div> 집이름 : <span onclick="showdetail('+position.rno+')"> '+position.rname+' </span> </div>'+
+                    '<div> 집이름 : <span> '+position.rtitle+' </span> </div>'+
                     '</div>'+
                     '</div>';
 
@@ -112,6 +115,8 @@ navigator.geolocation.getCurrentPosition(function(position) {
                 // 해당 html을 해당 id값에 추가
 
                 $("#sidebar").html(html);
+
+
 
             }
         })
@@ -126,27 +131,46 @@ navigator.geolocation.getCurrentPosition(function(position) {
 
 });
 
-    function showdetail(rno) {
 
-        let html = '방번호 : ' + list[rno-1].rno + '<br>' +
-                    '방이름 :  ' + list[rno-1].rname + '<br>' +
-                    '거래방식 :  ' + list[rno-1].rtype + '<br>' +
-                    '가격 :  ' + list[rno-1].rprice + '<br>' +
-                    '면적 :  ' + list[rno-1].rspace + '<br>' +
-                    '관리비 :  ' + list[rno-1].rmprice + '<br>' +
-                    '층 :  ' + list[rno-1].rfloor + '<br>' +
-                    '전체층수 :  ' + list[rno-1].rtotalfloor + '<br>' +
-                    '구조 :  ' + list[rno-1].rstructure + '<br>' +
-                    '준공날짜 :  ' + list[rno-1].rdate + '<br>' +
-                    '입주가능일 :  ' + list[rno-1].rmovedate + '<br>' +
-                    '주차 여부 :  ' + list[rno-1].rparking + '<br>' +
-                    '엘리베이터 여부 :  ' + list[rno-1].relevator + '<br>' +
-                    '건물 종류 :  ' + list[rno-1].rbuildingtype + '<br>' +
-                    '주소  :  ' + list[rno-1].raddress + '<br>' +
-                    '상세설명 :  ' + list[rno-1].rdetail + '<br>' +
-                    '상태 :  ' + list[rno-1].ractive;
+function getroom(rno){
+    $.ajax({
+        url : "/room/getroom",
+        data : {"rno" : rno},
+        success : function(room){
+            let imgtag = "";
+            let detailhtml = "" ;
+            // 응답받은 데이터를 모달에 넣기
+            for(let i = 0 ; i < room["rimglist"].length ; i++) {
+            console.log( room.rimglist[i]);
+                if(i==0){
+                    imgtag += '<div class="carousel-item active"><img src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="..."></div>';
+                }
+                else{
+                    imgtag += '<div class="carousel-item"><img src="/upload/'+room.rimglist[i]+'" class="d-block w-100" alt="..."></div>';
+                }
+            }
 
-         $("#sidebar").html(html);
+            detailhtml += '방번호 : ' + room["rno"] + '<br>' +
+                          '방이름 :  ' + room["rtitle"] + '<br>' +
+                          '거래방식 :  ' + room["rtrans"] + '<br>' +
+                          '가격 :  ' + room["rprice"] + '<br>' +
+                          '면적 :  ' + room["rspace"] + '<br>' +
+                          '관리비 :  ' + room["rmanagementfee"] + '<br>' +
+                          '층 :  ' + room["rfloor"] + '<br>' +
+                          '전체층수 :  ' + room["rmaxfloor"] + '<br>' +
+                          '구조 :  ' + room["rstructure"] + '<br>' +
+                          '준공날짜 :  ' + room["rcompletiondate"] + '<br>' +
+                          '입주가능일 :  ' + room["rindate"] + '<br>' +
+                         // '주차 여부 :  ' + room["rparking"] + '<br>' +
+                         // '엘리베이터 여부 :  ' + room["relevator"] + '<br>' +
+                          '건물 종류 :  ' + room["rkind"] + '<br>' +
+                          '주소  :  ' + room["raddress"] + '<br>' +
+                          '상세설명 :  ' + room["rcontents"] + '<br>' +
+                          '상태 :  ' + room["ractive"]+ '<br>';
 
-
-    }
+            $("#detail").html(detailhtml);
+            $("#csimg").html(imgtag);
+            $("#modalbtn").click();
+        }
+    })
+}
