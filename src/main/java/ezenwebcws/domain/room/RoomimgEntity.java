@@ -1,5 +1,6 @@
 package ezenwebcws.domain.room;
 
+import ezenwebcws.domain.BaseTime;
 import lombok.*;
 
 import javax.persistence.*;
@@ -7,7 +8,7 @@ import javax.persistence.*;
 @Getter @Setter @Builder @NoArgsConstructor @AllArgsConstructor @ToString
 @Table(name="roomimg")
 @Entity
-public class RoomimgEntity {
+public class RoomimgEntity extends BaseTime {
 
     // PK 번호
     @Id

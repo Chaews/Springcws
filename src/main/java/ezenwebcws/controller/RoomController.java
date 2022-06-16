@@ -1,9 +1,7 @@
 package ezenwebcws.controller;
 
 import ezenwebcws.dto.RoomDto;
-import ezenwebcws.service.MemberService;
 import ezenwebcws.service.RoomService;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +22,7 @@ public class RoomController {
     }
 
     @Autowired
-    private RoomService roomService;
+    RoomService roomService;
 
     @PostMapping("/write") // 2. 등록 처리
     @ResponseBody
@@ -75,6 +73,23 @@ public class RoomController {
        }
        catch(Exception e){ e.printStackTrace();}
     }
+
+    @GetMapping("/myroomlist")
+    public void myroomlist(HttpServletResponse response){
+        try {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json");
+            response.getWriter().print(roomService.myroomlist());
+        }
+        catch(Exception e){ e.printStackTrace();}
+    }
+
+    @DeleteMapping("/myroomdelete")
+    @ResponseBody
+    public boolean myroomdelete(@RequestParam("rno") int rno){
+        return roomService.myroomdelete(rno);
+    }
+
 }
 
 

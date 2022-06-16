@@ -1,5 +1,7 @@
 package ezenwebcws.domain.room;
 
+import ezenwebcws.domain.BaseTime;
+import ezenwebcws.domain.member.MemberEntity;
 import lombok.*;
 
 import javax.persistence.*;
@@ -14,7 +16,7 @@ import java.util.List;
 @Setter
 @Entity // DB내 테이블과 매핑(연결)
 @ToString
-public class RoomEntity { // Entity = 개체
+public class RoomEntity extends BaseTime { // Entity = 개체
 
     @Id // PK
     @GeneratedValue(strategy= GenerationType.IDENTITY) // AUTO KEY
@@ -41,4 +43,7 @@ public class RoomEntity { // Entity = 개체
     @Builder.Default
     @OneToMany(mappedBy = "roomEntity",cascade = CascadeType.ALL)
     private List<RoomimgEntity> roomimgEntityList = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(name="mno")
+    private MemberEntity memberEntity;
 }

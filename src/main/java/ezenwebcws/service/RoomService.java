@@ -1,9 +1,12 @@
 package ezenwebcws.service;
 
+import ezenwebcws.domain.member.MemberEntity;
+import ezenwebcws.domain.member.MemberRepository;
 import ezenwebcws.domain.room.RoomEntity;
 import ezenwebcws.domain.room.RoomRepository;
 import ezenwebcws.domain.room.RoomimgEntity;
 import ezenwebcws.domain.room.RoomimgRepository;
+import ezenwebcws.dto.LoginDto;
 import ezenwebcws.dto.RoomDto;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.io.File;
 import java.util.*;
@@ -22,15 +26,30 @@ public class RoomService {
     RoomRepository roomRepository;
     @Autowired
     RoomimgRepository roomimgRepository;
-
+    @Autowired
+    HttpServletRequest request;
+    @Autowired
+    MemberRepository memberRepository;
     // 1. 룸 저장
     @Transactional
     public boolean room_save(RoomDto roomDto) {
 
+        // 현재 로그인된 세션내 dto 호출
+        LoginDto loginDto = (LoginDto)request.getSession().getAttribute("login");
+
+        // 현재 로그인 회원의 엔티티 찾기
+        MemberEntity memberEntity = memberRepository.findById(loginDto.getMno()).get();
+
+        // 1. Dto -> entity [dto는 Db에 저장할수 없으니까 ]
         RoomEntity roomEntity = roomDto.toentity();
-        System.out.println(roomEntity.toString());
+
         // 2. 저장 [ 우선적으로 룸 DB에 저장한다 ]
         roomRepository.save(roomEntity);
+
+        // ** 현재ㅔ 로그인된 회원 엔티티를 룸 엔티티에 저장
+        roomEntity.setMemberEntity(memberEntity);
+        // ** 현재 로그인된 회원 엔티티내 룸리스트에 룸 엔티티 추가
+        memberEntity.getRoomEntityList().add(roomEntity);
 
         String uuidfile = null;
         // 첨부파일
@@ -178,4 +197,34 @@ public class RoomService {
         return jsonObject;
     }
 
+    // 현재 로그인된 회원이 등록한 방 목록 호출
+    public JSONArray myroomlist(){
+        JSONArray jsonArray = new JSONArray();
+
+        //현재 로그인된 회원 엔티티 찾기
+        LoginDto loginDto = (LoginDto)request.getSession().getAttribute("login");
+        MemberEntity memberEntity = memberRepository.findById(loginDto.getMno()).get();
+        // 찾은 회원 엔티티의 방 목록 json 형으로 변환
+        for(RoomEntity entity : memberEntity.getRoomEntityList()){
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("rno",entity.getRno());
+            jsonObject.put("rtitle",entity.getRtitle());
+            jsonObject.put("rimg",entity.getRoomimgEntityList().get(0).getRimg());
+            jsonObject.put("rdate",entity.getModifiedate());
+            jsonArray.put(jsonObject);
+        }
+        return jsonArray;
+    }
+
+    @Transactional
+    public boolean myroomdelete(int rno){
+        RoomEntity roomEntity = roomRepository.findById(rno).get();
+        if(roomEntity != null){
+            roomRepository.delete(roomEntity);
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 }
