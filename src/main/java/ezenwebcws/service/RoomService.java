@@ -63,7 +63,13 @@ public class RoomService {
                 uuidfile = uuid.toString()+"_"+file.getOriginalFilename().replaceAll("_","-");
                     // UUID와 파일명 구분 _ 사용 [ 만약에 파일명에 _ 존재하면 문제발생 - > 파일명 _ ----> - 로 변경 ]
                 // 2. 경로 설정
+                // 1. 윈도우 운영체제 프로젝트 경로
                 String dir = "C:\\Users\\504\\IdeaProjects\\springcws\\src\\main\\resources\\static\\upload\\" ;
+
+                // 2. 리눅스 운영체제 프로젝트 빌드[서버] 경로
+                //String dir = "/home/ec2-user/app/{프로젝트명}/build/resources/main/static/upload";
+
+
                 String filepath = dir + uuidfile; // 실제 첨부파일 이름
                 //.getOriginalFilename() : 실제 첨부파일 이름
 
@@ -127,8 +133,9 @@ public class RoomService {
         // 2. 엔티티 -> map
         for (RoomEntity entity : roomEntityList) { // 리스트에서 엔티티 하나씩 꺼내오기
             // Location 범위내 좌표만 저장하기
-            Double dx = Double.parseDouble(entity.getRlat());
-            Double dy = Double.parseDouble(entity.getRlng());
+
+            double dx = Double.parseDouble(entity.getRlat());
+            double dy = Double.parseDouble(entity.getRlng());
             if(ha<dx && dx < oa && qa < dy && dy < pa ) {
                 Map<String, String> map = new HashMap<String, String>();
                 map.put("rno", entity.getRno()+"");

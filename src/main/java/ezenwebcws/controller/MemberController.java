@@ -54,7 +54,7 @@ public class MemberController {
 
     @GetMapping("/update")
     public String update(){
-        return "/member/update";
+        return "member/update";
     }
     @PutMapping("/update")
     @ResponseBody
@@ -64,16 +64,16 @@ public class MemberController {
 
     @GetMapping("/info")
     public String info(){
-        return "/member/info";
+        return "member/info";
     }
 
     @GetMapping("/myroom")
     public String myroom(){
-        return "/member/myroom";
+        return "member/myroom";
     }
 
     @GetMapping("/delete")
-    public String delete(){return "/member/delete";}
+    public String delete(){return "member/delete";}
 
     @DeleteMapping("/delete")
     @ResponseBody

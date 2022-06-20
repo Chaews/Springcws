@@ -1,10 +1,10 @@
 let list = [];
 // GeoLocation을 이용해서 접속 위치를 얻어옵니다
-navigator.geolocation.getCurrentPosition(function(position) {
-    var lat = position.coords.latitude, // 위도
-        lon = position.coords.longitude; // 경도
+//navigator.geolocation.getCurrentPosition(function(position) {
+//    var lat = position.coords.latitude, // 위도
+//        lon = position.coords.longitude; // 경도
     var map = new kakao.maps.Map(document.getElementById('map'), { // 지도를 표시할 div
-        center : new kakao.maps.LatLng(lat, lon), // 지도의 중심좌표
+        center : new kakao.maps.LatLng(37.4530, 126.794101), // 지도의 중심좌표
         level : 4 // 지도의 확대 레벨
     });
 
@@ -121,7 +121,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
             }
         })
     });
-    var markerImageUrl = 'http://localhost:8082/img/markerimg.png',
+    var markerImageUrl = 'http://192.168.17.131:8082/img/markerimg.png',
         markerImageSize = new kakao.maps.Size(40, 42), // 마커 이미지의 크기
         markerImageOptions = {
             offset : new kakao.maps.Point(20, 42)// 마커 좌표에 일치시킬 이미지 안의 좌표
@@ -129,7 +129,7 @@ navigator.geolocation.getCurrentPosition(function(position) {
     var markerImage = new kakao.maps.MarkerImage(markerImageUrl, markerImageSize, markerImageOptions);
 
 
-});
+//});
 
 
 function getroom(rno){
