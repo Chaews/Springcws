@@ -1,3 +1,9 @@
+$("#mname").keyup(function(e){
+   if(e.keyCode == 13){
+        memberwrite();
+    }
+});
+
 function memberwrite(){
     let form = $("#signupform")[0];
     let formdata = new FormData(form);

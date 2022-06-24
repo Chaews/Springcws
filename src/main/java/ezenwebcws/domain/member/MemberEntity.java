@@ -1,6 +1,7 @@
 package ezenwebcws.domain.member;
 
 import ezenwebcws.domain.BaseTime;
+import ezenwebcws.domain.board.BoardEntity;
 import ezenwebcws.domain.room.RoomEntity;
 import lombok.*;
 
@@ -20,7 +21,19 @@ public class MemberEntity extends BaseTime {
     private String mid;
     private String mpassword;
     private String mname;
+
+//    @Enumerated(EnumType.ORDINAL) // 열거형 인덱스 번호
+    @Enumerated(EnumType.STRING) // 열거형 이름
+    private Role role ; // 권한
+
+    public String getrolekey(){
+        return role.getKey();
+    }
+
     @Builder.Default
     @OneToMany(mappedBy="memberEntity",cascade=CascadeType.ALL)
     private List<RoomEntity> roomEntityList = new ArrayList<RoomEntity>();
+    @Builder.Default // 빌더 사용시 초기값 설정
+    @OneToMany(mappedBy = "memberEntity",cascade=CascadeType.ALL) // 1:M
+    private List<BoardEntity> boardEntityList = new ArrayList<>();
 }

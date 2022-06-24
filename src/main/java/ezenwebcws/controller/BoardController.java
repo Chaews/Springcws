@@ -2,11 +2,8 @@ package ezenwebcws.controller;
 
 import ezenwebcws.dto.BoardDto;
 import ezenwebcws.service.BoardService;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +35,13 @@ public class BoardController {
         return "board/view";
     }
 
+    // 세션에 저장안하고 처리하기
+//    @GetMapping("/view") // URL 경로에 변수
+//    public String view(){ // { } 안에서 선언된 변수는 밖에서 사용불가
+//        // 1. 내가 보고 있는 게시물의 번호를 세션 저장
+//        return "board/view";
+//    }
+
     // 3. 게시물 수정 페이지
     @GetMapping("/update")
     public String update(){
@@ -60,11 +64,11 @@ public class BoardController {
     }
     // 2. R
     @GetMapping("/getboardlist")
-    public void getboardlist(HttpServletResponse response){
+    public void getboardlist(@RequestParam("cno")int cno, @RequestParam("key")String key, @RequestParam("keyword")String keyword, @RequestParam("page")int page , HttpServletResponse response){
         try {
             response.setCharacterEncoding("UTF-8");
             response.setContentType("application/json");
-            response.getWriter().print(boardService.getboardlist());
+            response.getWriter().print(boardService.getboardlist(cno, key, keyword, page));
         }
         catch (Exception e){ e.printStackTrace(); }
     }
@@ -81,6 +85,18 @@ public class BoardController {
         catch (Exception e){ e.printStackTrace(); };
     }
 
+    // 세션에 저장안하고 처리하기
+//    @PostMapping("/view{bno}")
+//    @ResponseBody
+//    public void getboard(@RequestParam("bno") int bno , HttpServletResponse response){
+//        try {
+//            response.setContentType("application/json");
+//            response.setCharacterEncoding("UTF-8");
+//            response.getWriter().print(boardService.getboard(bno));
+//        }
+//        catch (Exception e){ e.printStackTrace(); };
+//    }
+
     // 3. U
     @PutMapping("/update")
     @ResponseBody
@@ -94,6 +110,16 @@ public class BoardController {
     @ResponseBody
     public boolean delete(@RequestParam("bno") int bno){
         return boardService.delete(bno);
+    }
+
+    @GetMapping("/getcategorylist")
+    public void getcategorylist(HttpServletResponse response){
+        try {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("application/json");
+            response.getWriter().print(boardService.getcategorylist());
+        }
+        catch (Exception e){ e.printStackTrace(); }
     }
 }
 

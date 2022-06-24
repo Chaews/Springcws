@@ -25,18 +25,20 @@ public class MemberController {
         return "/member/login";
     }
 
-    @GetMapping("/logout")
-    public String logout(Model model){
-        memberService.logout();
-        //return "/main"; // 타임리프 반환
-        return "redirect:/";
-    }
+//    @GetMapping("/logout")
+//    public String logout(Model model){
+//        memberService.logout();
+//        //return "/main"; // 타임리프 반환
+//        return "redirect:/";
+//    }
 
-    @PostMapping("/login")
-    @ResponseBody
-    public boolean login(@RequestParam("mid") String mid, @RequestParam("mpassword") String mpassword){
-        return memberService.login(mid, mpassword);
-    }
+//    [ 시큐리티 사용하기 전 ]
+//    @PostMapping("/login")
+//    @ResponseBody
+//    public boolean login(@RequestParam("mid") String mid, @RequestParam("mpassword") String mpassword){
+//        return memberService.login(mid, mpassword);
+//    }
+
     @GetMapping("/signup")
     public String signup(){
         return "/member/memberwrite";

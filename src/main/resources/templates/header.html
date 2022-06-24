@@ -12,13 +12,18 @@
  <a th:if="${session.login != null}" href="/room/write">등록</a>
  <a href="/room/list">지도보기</a>
  <a href="/board/list"> 자유게시판 </a>
- <span th:if="${session.login != null}" th:text="${session.login}"></span>
- <a th:if="${session.login != null}" href="/member/info">회원정보</a>
- <a th:if="${session.login != null}" href="/member/logout">로그아웃</a>
- <a th:if="${session.login == null}" href="/member/signup">회원가입</a>
- <a th:if="${session.login == null}" href="/member/login">로그인</a>
+<!-- 시큐리티 사용하기 전-->
+<!-- <span th:if="${session.login != null}" th:text="${session.login}"></span>-->
+<!-- <a th:if="${session.login != null}" href="/member/info">회원정보</a>-->
+<!-- <a th:if="${session.login != null}" href="/member/logout">로그아웃</a>-->
+<!-- <a th:if="${session.login == null}" href="/member/signup">회원가입</a>-->
+<!-- <a th:if="${session.login == null}" href="/member/login">로그인</a>-->
 
-
+ <!--시큐리티 사용한 후-->
+<a href="/member/info">회원정보</a>
+<a href="/member/logout">로그아웃</a>
+<a href="/member/signup">회원가입</a>
+<a href="/member/login">로그인</a>
 
  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

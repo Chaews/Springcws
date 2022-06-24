@@ -9,6 +9,11 @@
 <div class="container">
 
     <form id="boardform">
+        카테고리 : <select name="category">
+        <option value="자유게시판" selected> 자유게시판 </option>
+        <option value="질문게시판"> 질문게시판 </option>
+        <option value="거래게시판"> 거래게시판 </option>
+    </select>
         제목 : <input type="text" name="btitle" id="btitle"> <br>
         내용 : <input type="text" name="bcontent" id="bcontent"> <br>
         <button type="button" onclick="boardsave()"> 쓰기 처리 </button>
