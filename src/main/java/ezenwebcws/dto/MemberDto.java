@@ -20,7 +20,6 @@ public class MemberDto {
             // 보안할데이터 + 랜덤데이터 -> 다른 진수로 변환
         BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-
         return MemberEntity.builder()
                 .mid(this.mid)
                 .mpassword(passwordEncoder.encode(this.mpassword))
