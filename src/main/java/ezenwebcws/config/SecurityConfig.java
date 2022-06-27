@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/") // 로그인 성공시 이동할 URL
                 .usernameParameter("mid") // 로그인시 아이디로 입력받을 변수명 // form 사용시 name
                 .passwordParameter("mpassword") // 로그인시 비밀번호로 입력받을 변수명 // form 사용시 name
-                .failureUrl("/member/myroom")
+//                .failureUrl("/member/myroom")
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))
@@ -45,9 +45,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf() // csrf(): 사이트간 요청 위조 [ 해킹 공격방법중 하나 ]  = 서버에게 요청할 수 있는 페이지 제한
                 .ignoringAntMatchers("/member/logincontroller")
                 .ignoringAntMatchers("/member/signup")
+                .ignoringAntMatchers("/board/save")
                 .and()
                 .exceptionHandling() // 오류페이지 발생시 시큐리티가 페이지 전환
-                .accessDeniedPage("/error");
+                .accessDeniedPage("/error")
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(memberService); // 해당 서비스 클래스로 유저 정보 받는다
+
     } // configure 메소드 end
 
     // 로그인 보안 서비스

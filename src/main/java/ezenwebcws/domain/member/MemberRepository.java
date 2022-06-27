@@ -14,6 +14,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
 //    Optional<MemberEntity> findBymid(@Param("keyword") String mid); // select
     Optional<MemberEntity> findBymid(@Param("keyword") String mid); // select
 
+    Optional< MemberEntity > findBymemail( String email );
+
 
 }
 
