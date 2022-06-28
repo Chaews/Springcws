@@ -35,7 +35,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/") // 로그인 성공시 이동할 URL
                 .usernameParameter("mid") // 로그인시 아이디로 입력받을 변수명 // form 사용시 name
                 .passwordParameter("mpassword") // 로그인시 비밀번호로 입력받을 변수명 // form 사용시 name
-//                .failureUrl("/member/myroom")
+                .failureUrl("/member/login/error")
                 .and()
                 .logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/member/logout"))

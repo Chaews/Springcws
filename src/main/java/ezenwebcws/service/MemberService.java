@@ -6,6 +6,8 @@ import ezenwebcws.dto.LoginDto;
 import ezenwebcws.dto.MemberDto;
 import ezenwebcws.dto.OauthDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,11 +22,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 public class MemberService implements UserDetailsService, OAuth2UserService<OAuth2UserRequest, OAuth2User> {
@@ -111,10 +111,13 @@ public class MemberService implements UserDetailsService, OAuth2UserService<OAut
     @Autowired
     MemberRepository memberRepository;
 
-
     // 로직 / 트랜잭션
     @Autowired
     HttpServletRequest request; // 세션 사용을 위한 request 객체 선언
+
+
+
+
 
     // 1. 로그인처리 메소드 [ 시큐리티 사용하기 전 ]
 //    public boolean login(String mid, String mpassword) {
@@ -132,8 +135,11 @@ public class MemberService implements UserDetailsService, OAuth2UserService<OAut
 //        return false;
 //    }
 
+    @Autowired
+    JavaMailSender javaMailSender;
 
     // 2. 회원가입 처리 메소드
+    @Transactional
     public boolean signup(MemberDto memberDto) {
         // dto -> Entity [ 이유 : dto는 DB로 들어갈 수 없다 ]
         MemberEntity memberEntity = memberDto.toentity();
@@ -142,7 +148,49 @@ public class MemberService implements UserDetailsService, OAuth2UserService<OAut
         if (memberEntity.getMno() < 0) {
             return false;
         } else {
+
+            StringBuilder html = new StringBuilder();
+            html.append("<html><body><h1> EZEN 부동산 회원 이메일 검증 </h1>");
+
+            Random random = new Random();
+            StringBuilder 인증코드 = new StringBuilder();
+            for(int i = 0 ; i < 12 ; i++){ // 12자리 문자 난수 생성
+                char character =(char)((random.nextInt(26)+97)) ; // 97 ~ 122
+                인증코드.append(character);
+            }
+            html.append("<a href='http://localhost:8082/member/email/signup/"+인증코드+"/"+memberDto.getMid()+"')>이메일검증</a>");
+            html.append("</body></html>");
+
+            memberEntity.setOauth(인증코드.toString());
+//        try{
+//            MimeMessage message = javaMailSender.createMimeMessage();
+//            // 0 . Mime 설정
+//            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,true,"UTF-8"); // 예외처리 발생
+//            mimeMessageHelper.setFrom("내 메일 주소","Ezen 부동산");
+//            mimeMessageHelper.setTo("받을사람");
+//            mimeMessageHelper.setSubject("제목");
+//            mimeMessageHelper.setText("<a href='#'> 회원가입 이메일 검증 </a>",true);
+//            javaMailSender.send(message);
+//
+//        }catch(Exception e){ e.printStackTrace(); }
+
             return true;
+        }
+
+    }
+
+    @Transactional
+    public void authsuccess(String authkey, String mid){
+        System.out.println("검증번호 : " + authkey + " / " + mid);
+        // DB 업데이트
+        Optional<MemberEntity> optional = memberRepository.findBymid(mid);
+        if(optional.isPresent()){
+            MemberEntity memberEntity = optional.get();
+            if(authkey.equals(memberEntity.getOauth())){
+                // 만약에 인증키와 DB내 인증키가 동일하면
+                memberEntity.setOauth("Local");
+            }
+
         }
     }
 

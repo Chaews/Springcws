@@ -12,6 +12,8 @@ public class MemberDto {
     private String mpassword;
     private String mname;
 
+    private String memail;
+
     public MemberEntity toentity(){
 
         // 패스워드 암호화
@@ -24,6 +26,7 @@ public class MemberDto {
                 .mid(this.mid)
                 .mpassword(passwordEncoder.encode(this.mpassword))
                 .mname(this.mname)
+                .memail(this.memail)
                 .role(Role.MEMBER)
                 .build();
     }

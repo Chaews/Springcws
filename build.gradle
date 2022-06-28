@@ -24,6 +24,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation group: 'org.json', name: 'json', version: '20220320'
 //    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'mysql:mysql-connector-java'
@@ -35,6 +36,7 @@ dependencies {
 
     // 타임리프에서 인증객체 사용
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
+
 
 }
 

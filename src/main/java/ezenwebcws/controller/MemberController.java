@@ -25,6 +25,17 @@ public class MemberController {
         return "/member/login";
     }
 
+    @GetMapping("/email/{authkey}/{mid}")
+    public String signupemail(@PathVariable("authkey") String authkey,@PathVariable("mid") String mid){
+        //@PathVariable : 경로상(URL) 변수 요청
+
+        // 이메일 검증 처리
+        memberService.authsuccess(authkey,mid);
+        // 화면 전환
+
+        return "member/authsuccess";
+    }
+
 //    @GetMapping("/logout")
 //    public String logout(Model model){
 //        memberService.logout();
@@ -41,7 +52,7 @@ public class MemberController {
 
     @GetMapping("/signup")
     public String signup(){
-        return "/member/memberwrite";
+        return "/member/write";
     }
 
     // 2. 회원가입 페이지 이동 매핑

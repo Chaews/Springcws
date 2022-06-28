@@ -4,7 +4,7 @@ $("#mname").keyup(function(e){
     }
 });
 
-function memberwrite(){
+function signup(){
     let form = $("#signupform")[0];
     let formdata = new FormData(form);
     $.ajax({
