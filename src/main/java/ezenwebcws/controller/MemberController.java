@@ -30,10 +30,14 @@ public class MemberController {
         //@PathVariable : 경로상(URL) 변수 요청
 
         // 이메일 검증 처리
-        memberService.authsuccess(authkey,mid);
+        boolean result = memberService.authsuccess(authkey,mid);
         // 화면 전환
-
-        return "member/authsuccess";
+        if(result) {
+            return "member/authsuccess";
+        }
+        else{
+            return "";
+        }
     }
 
 //    @GetMapping("/logout")
@@ -50,15 +54,17 @@ public class MemberController {
 //        return memberService.login(mid, mpassword);
 //    }
 
+
+
+    // 2. 회원가입 페이지 이동 매핑
     @GetMapping("/signup")
     public String signup(){
         return "/member/write";
     }
 
-    // 2. 회원가입 페이지 이동 매핑
     @PostMapping("/signup")
     @ResponseBody
-    public boolean save(MemberDto memberDto, HttpServletResponse response){
+    public boolean save(MemberDto memberDto){
         // 서비스 호출
         boolean result = memberService.signup(memberDto);
 

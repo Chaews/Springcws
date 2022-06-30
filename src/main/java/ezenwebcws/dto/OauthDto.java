@@ -13,7 +13,7 @@ public class OauthDto {
     private String nameAttributeKey;
     private String mname;
     private String memail;
-    private String registrationId;
+    private String registrationId; // 클라이언트 ID
 
     public static OauthDto of( String registrationId , String nameAttributeKey , Map<String , Object> attributes ){
         if( registrationId.equals("naver") ){

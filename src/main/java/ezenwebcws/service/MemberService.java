@@ -138,6 +138,20 @@ public class MemberService implements UserDetailsService, OAuth2UserService<OAut
     @Autowired
     JavaMailSender javaMailSender;
 
+
+    public void mailsend(String toemail, String title, StringBuilder content){
+        // SMTP 간이 메일 전송 프로토콜 [ 텍스트 외 불가능 ]
+        try{ // 이메일 전송
+            MimeMessage message = javaMailSender.createMimeMessage(); // MIME 프로토콜 ; 메시지 안에 텍스트 외 내용
+           // 0 . Mime 설정
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,true,"UTF-8"); // 예외처리 발생
+            mimeMessageHelper.setFrom("chae0258@naver.com","Ezen 부동산");
+            mimeMessageHelper.setTo(toemail);
+            mimeMessageHelper.setSubject(title);
+            mimeMessageHelper.setText(content.toString(),true);
+            javaMailSender.send(message);
+        }catch(Exception e){ e.printStackTrace(); }
+    }
     // 2. 회원가입 처리 메소드
     @Transactional
     public boolean signup(MemberDto memberDto) {
@@ -145,43 +159,33 @@ public class MemberService implements UserDetailsService, OAuth2UserService<OAut
         MemberEntity memberEntity = memberDto.toentity();
         memberRepository.save(memberEntity);
         // 저장여부 판단
-        if (memberEntity.getMno() < 0) {
+        if (memberEntity.getMno() < 1) {
             return false;
         } else {
 
             StringBuilder html = new StringBuilder();
             html.append("<html><body><h1> EZEN 부동산 회원 이메일 검증 </h1>");
-
+            // 인증코드 [ 문자 난수 ] 만들기
             Random random = new Random();
-            StringBuilder 인증코드 = new StringBuilder();
+            StringBuilder authkey = new StringBuilder();
             for(int i = 0 ; i < 12 ; i++){ // 12자리 문자 난수 생성
                 char character =(char)((random.nextInt(26)+97)) ; // 97 ~ 122
-                인증코드.append(character);
+                authkey.append(character);
             }
-            html.append("<a href='http://localhost:8082/member/email/signup/"+인증코드+"/"+memberDto.getMid()+"')>이메일검증</a>");
+            html.append("<a href='http://localhost:8082/member/email/signup/"+authkey+"/"+memberDto.getMid()+"')>이메일검증</a>");
             html.append("</body></html>");
 
-            memberEntity.setOauth(인증코드.toString());
-//        try{
-//            MimeMessage message = javaMailSender.createMimeMessage();
-//            // 0 . Mime 설정
-//            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(message,true,"UTF-8"); // 예외처리 발생
-//            mimeMessageHelper.setFrom("내 메일 주소","Ezen 부동산");
-//            mimeMessageHelper.setTo("받을사람");
-//            mimeMessageHelper.setSubject("제목");
-//            mimeMessageHelper.setText("<a href='#'> 회원가입 이메일 검증 </a>",true);
-//            javaMailSender.send(message);
-//
-//        }catch(Exception e){ e.printStackTrace(); }
+            memberEntity.setOauth(authkey.toString());
+            mailsend(memberDto.getMemail(), "EZEN 부동산 회원가입 메일 인증" , html);
 
-            return true;
+            return true; // 회원가입 성공
         }
 
     }
 
     @Transactional
-    public void authsuccess(String authkey, String mid){
-        System.out.println("검증번호 : " + authkey + " / " + mid);
+    public boolean authsuccess(String authkey, String mid){
+//        System.out.println("검증번호 : " + authkey + " / " + mid);
         // DB 업데이트
         Optional<MemberEntity> optional = memberRepository.findBymid(mid);
         if(optional.isPresent()){
@@ -189,9 +193,11 @@ public class MemberService implements UserDetailsService, OAuth2UserService<OAut
             if(authkey.equals(memberEntity.getOauth())){
                 // 만약에 인증키와 DB내 인증키가 동일하면
                 memberEntity.setOauth("Local");
+                return true;
             }
 
         }
+        return false;
     }
 
 //    public void logout(){
