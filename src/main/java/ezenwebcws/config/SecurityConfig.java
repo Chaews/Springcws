@@ -75,4 +75,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             // 인증할 서비스 객체 -> 패스워드 인코딩(Bcrypt 객체로)
 //        super.configure(auth); // 기본값
     }
+
+
 }
